@@ -11,7 +11,7 @@ mod part1_impl {
     // `spring_layout` is the string representation of the springs with operational ('.'), damaged ('#'), or unknown ('?') status.
     // `group_sizes` is an iterator over the sizes of groups of damaged springs.
     pub fn count_arrangements(spring_layout: &str, group_sizes: impl Iterator<Item = usize>) -> u64 {
-        // Collect group sizes into a vector for easy access
+        // Collect group sizes into a vector
         let group_sizes = group_sizes.collect::<Vec<_>>();
         // Prepend a '.' to handle edge cases and trim trailing operational springs
         let spring_layout = format!(".{}", spring_layout.trim_end_matches('.'));
@@ -84,7 +84,7 @@ mod part2_impl {
     // `spring_layout` is the string representation of the springs with operational ('.'), damaged ('#'), or unknown ('?') status.
     // `group_sizes` is an iterator over the sizes of groups of damaged springs.
     pub fn count_arrangements(spring_layout: &str, group_sizes: impl Iterator<Item = usize>) -> u128 {
-        // Collect group sizes into a vector for easy access
+        // Collect group sizes into a vector
         let group_sizes = group_sizes.collect::<Vec<_>>();
         // Prepend a '.' to handle edge cases and trim trailing operational springs
         let spring_layout = format!(".{}", spring_layout.trim_end_matches('.'));

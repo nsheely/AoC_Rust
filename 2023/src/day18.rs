@@ -1,6 +1,6 @@
 // Day 18: Lavaduct Lagoon
 //
-// Part 1: Calculate lagoon area from simple dig instructions
+// Part 1: Calculate lagoon area from dig instructions
 // Part 2: Calculate lagoon area from hex-encoded instructions
 //
 // Uses shoelace formula + Pick's theorem for polygon area calculation.

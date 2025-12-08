@@ -1,14 +1,16 @@
 /// Day 2: Gift Shop
 ///
 /// Find and sum all "invalid" product IDs within given ranges.
-/// An invalid ID is any number formed by repeating a digit sequence exactly twice.
-/// Examples: 11 (1 repeated), 6464 (64 repeated), 123123 (123 repeated)
+/// An invalid ID is any number formed by repeating a digit sequence.
+/// Examples: 11 (1 repeated twice), 6464 (64 repeated twice), 123123 (123 repeated twice)
 ///
-/// Rather than checking each number, we generate invalid IDs directly.
-/// For a given total digit count D (must be even), invalid IDs follow a pattern.
-/// Example: 4-digit IDs with 2-digit sequences: 1010, 1111, 1212, ..., 9898, 9999
-/// The sequence XY repeated twice equals: XY * 101 (for 2 digits)
-/// The sequence ABC repeated twice equals: ABC * 1001 (for 3 digits)
+/// Rather than iterating through every number in the range checking if it's invalid,
+/// we compute which patterns exist in the range, then sum them with an arithmetic series.
+///
+/// Pattern multipliers:
+/// - 2-digit pattern repeated twice: XY * 101 (e.g., 12 * 101 = 1212)
+/// - 3-digit pattern repeated twice: ABC * 1001 (e.g., 123 * 1001 = 123123)
+/// - General: pattern * ((10^total_digits - 1) / (10^pattern_digits - 1))
 
 #[aoc_generator(day2)]
 pub fn parse(input: &str) -> Vec<(u64, u64)> {
@@ -31,12 +33,12 @@ pub fn parse(input: &str) -> Vec<(u64, u64)> {
         .collect()
 }
 
-/// Sum invalid IDs in a range for a specific pattern configuration.
+/// Sum all invalid IDs in a range with a specific repetition structure.
 ///
-/// total_digits: Total number of digits in the invalid ID
-/// pattern_digits: Length of the repeating pattern
+/// total_digits: Total digits in the full number
+/// pattern_digits: Digits in the repeating unit
 ///
-/// Example: total_digits=6, pattern_digits=2 means "AB" repeated 3 times (ABABAB)
+/// Example: total_digits=6, pattern_digits=2 → "AB" repeated 3 times (ABABAB)
 #[inline]
 fn sum_for_config(start: u64, end: u64, total_digits: u32, pattern_digits: u32) -> u64 {
     if total_digits % pattern_digits != 0 {
@@ -46,15 +48,15 @@ fn sum_for_config(start: u64, end: u64, total_digits: u32, pattern_digits: u32) 
     let pattern_min = 10u64.pow(pattern_digits - 1);
     let pattern_max = 10u64.pow(pattern_digits) - 1;
 
-    // Multiplier to convert pattern to full invalid ID
-    // For pattern "AB" repeated 3 times: AB * 10101
+    // Multiplier converts base pattern to full number
+    // Example: for "AB" repeated 3 times, multiplier is 10101, so AB * 10101 = ABABAB
     let multiplier = (10u64.pow(total_digits) - 1) / (10u64.pow(pattern_digits) - 1);
 
-    // Range of invalid IDs
+    // Range bounds for all possible invalid IDs with this structure
     let invalid_min = pattern_min * multiplier;
     let invalid_max = pattern_max * multiplier;
 
-    // Find overlap with [start, end]
+    // Intersect with the query range [start, end]
     let lower = start.max(invalid_min);
     let upper = end.min(invalid_max);
 
@@ -62,7 +64,7 @@ fn sum_for_config(start: u64, end: u64, total_digits: u32, pattern_digits: u32) 
         return 0;
     }
 
-    // Find first and last patterns in range
+    // Convert back to base patterns to count how many exist in range
     let first_pattern = (lower + multiplier - 1) / multiplier; // Round up
     let last_pattern = upper / multiplier; // Round down
 
@@ -70,7 +72,7 @@ fn sum_for_config(start: u64, end: u64, total_digits: u32, pattern_digits: u32) 
         return 0;
     }
 
-    // Sum using arithmetic series formula
+    // Arithmetic series: sum = (first + last) * count / 2
     let count = last_pattern - first_pattern + 1;
     let sum_of_patterns = (first_pattern + last_pattern) * count / 2;
 
@@ -82,7 +84,8 @@ pub fn part1(ranges: &[(u64, u64)]) -> u64 {
     ranges
         .iter()
         .map(|&(start, end)| {
-            // Patterns repeated exactly 2 times: [2,1], [4,2], [6,3], [8,4], [10,5]
+            // Check all patterns repeated exactly 2 times
+            // 1-digit × 2 = 2 digits, 2-digit × 2 = 4 digits, ..., 10-digit × 2 = 20 digits
             (1..=10)
                 .map(|pattern_len| sum_for_config(start, end, pattern_len * 2, pattern_len))
                 .sum::<u64>()
@@ -92,10 +95,10 @@ pub fn part1(ranges: &[(u64, u64)]) -> u64 {
 
 #[aoc(day2, part2)]
 pub fn part2(ranges: &[(u64, u64)]) -> u64 {
-    // Part 2: Patterns repeated at least 2 times
-    // Use inclusion-exclusion to avoid double-counting
+    // Part 2: Patterns repeated at least 2 times (vs exactly 2 times in Part 1)
+    // Use inclusion-exclusion to avoid counting numbers multiple ways
 
-    // All patterns repeated exactly 2 times
+    // Start with all patterns repeated exactly 2 times
     let part1_sum: u64 = ranges
         .iter()
         .map(|&(start, end)| {
@@ -105,15 +108,14 @@ pub fn part2(ranges: &[(u64, u64)]) -> u64 {
         })
         .sum();
 
-    // Additional patterns: odd repetitions (3, 5, 7, ...)
-    // [3,1], [5,1], [6,2], [7,1], [9,3], [10,2]
+    // Add patterns with 3+ repetitions
     let configs = [
-        (3, 1),   // "X" repeated 3 times
-        (5, 1),   // "X" repeated 5 times
-        (6, 2),   // "XY" repeated 3 times
-        (7, 1),   // "X" repeated 7 times
-        (9, 3),   // "XYZ" repeated 3 times
-        (10, 2),  // "XY" repeated 5 times
+        (3, 1),   // "X" repeated 3 times (XXX)
+        (5, 1),   // "X" repeated 5 times (XXXXX)
+        (6, 2),   // "XY" repeated 3 times (XYXYXY)
+        (7, 1),   // "X" repeated 7 times (XXXXXXX)
+        (9, 3),   // "XYZ" repeated 3 times (XYZXYZXYZ)
+        (10, 2),  // "XY" repeated 5 times (XYXYXYXYXY)
     ];
 
     let additional_sum: u64 = ranges
@@ -126,8 +128,8 @@ pub fn part2(ranges: &[(u64, u64)]) -> u64 {
         })
         .sum();
 
-    // Subtract overlaps: [6,1], [10,1]
-    // These are numbers like 111111 that can be counted multiple ways
+    // Subtract numbers counted multiple ways
+    // Example: 111111 is both "11" repeated 3× and "111" repeated 2×
     let overlap_sum: u64 = ranges
         .iter()
         .map(|&(start, end)| {

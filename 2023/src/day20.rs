@@ -2,7 +2,7 @@
 //
 // The input has a hidden structure: 4 independent 12-bit binary counters.
 // Each counter is a chain of flip-flops that resets when hitting a threshold.
-// We can extract the thresholds directly from the graph and compute pulses mathematically.
+// We extract threshold values from the graph structure, then calculate pulse counts from those values.
 
 use std::collections::HashMap;
 
@@ -56,7 +56,7 @@ pub fn parse_input(input: &str) -> Input {
     counter_values.try_into().unwrap()
 }
 
-/// Calculate pulses using bitwise logic instead of simulation
+/// Count pulses by tracking state transitions with XOR operations
 #[aoc(day20, part1)]
 pub fn part1(input: &str) -> u32 {
     let counters = parse_input(input);

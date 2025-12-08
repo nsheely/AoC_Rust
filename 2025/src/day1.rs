@@ -1,3 +1,13 @@
+// Day 1: Dial Puzzle
+//
+// Track position on a circular dial with 100 positions, starting at 50.
+// Part 1: Count exact landings on position 0
+// Part 2: Count crossings through position 0 (including partial moves)
+//
+// Transform left turns into equivalent right turns.
+// Going left from position P is the same as going right from (100-P).
+// This allows both directions to use the same crossing formula: (position + distance) / 100
+
 const DIAL_SIZE: i32 = 100;
 const START_POSITION: i32 = 50;
 

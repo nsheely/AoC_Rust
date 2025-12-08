@@ -122,7 +122,7 @@ pub fn parse_input(input: &str) -> Input {
     graph_to_grid(&graph)
 }
 
-/// Part 1: Directed graph (only right/down), simple DP.
+/// Part 1: Directed graph (only right/down) with DP.
 #[aoc(day23, part1)]
 pub fn part1(input: &Input) -> u32 {
     let mut total = [[0; 6]; 6];
