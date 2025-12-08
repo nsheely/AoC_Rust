@@ -12,31 +12,6 @@
 /// - 3-digit pattern repeated twice: ABC * 1001 (e.g., 123 * 1001 = 123123)
 /// - General: pattern * ((10^total_digits - 1) / (10^pattern_digits - 1))
 
-const fn pow10(n: u32) -> u64 {
-    match n {
-        0 => 1,
-        1 => 10,
-        2 => 100,
-        3 => 1000,
-        4 => 10000,
-        5 => 100000,
-        6 => 1000000,
-        7 => 10000000,
-        8 => 100000000,
-        9 => 1000000000,
-        10 => 10000000000,
-        11 => 100000000000,
-        12 => 1000000000000,
-        13 => 10000000000000,
-        14 => 100000000000000,
-        15 => 1000000000000000,
-        16 => 10000000000000000,
-        17 => 100000000000000000,
-        18 => 1000000000000000000,
-        19 => 10000000000000000000,
-        _ => panic!("pow10 only supports up to 10^19"),
-    }
-}
 
 #[aoc_generator(day2)]
 pub fn parse(input: &str) -> Vec<(u64, u64)> {
@@ -70,67 +45,35 @@ struct Config {
 }
 
 // Precomputed configs for Part 1: patterns repeated exactly 2 times
-const PART1_CONFIGS: [Config; 10] = [
-    Config::new(2, 1),
-    Config::new(4, 2),
-    Config::new(6, 3),
-    Config::new(8, 4),
-    Config::new(10, 5),
-    Config::new(12, 6),
-    Config::new(14, 7),
-    Config::new(16, 8),
-    Config::new(18, 9),
-    Config::new(20, 10), // largest input is ~10 digits, but we check up to 20 for completeness
+const PART1_CONFIGS: [Config; 9] = [
+    Config { pattern_min: 1, pattern_max: 9, multiplier: 11, invalid_min: 11, invalid_max: 99 },
+    Config { pattern_min: 10, pattern_max: 99, multiplier: 101, invalid_min: 1010, invalid_max: 9999 },
+    Config { pattern_min: 100, pattern_max: 999, multiplier: 1001, invalid_min: 100100, invalid_max: 999999 },
+    Config { pattern_min: 1000, pattern_max: 9999, multiplier: 10001, invalid_min: 10001000, invalid_max: 99999999 },
+    Config { pattern_min: 10000, pattern_max: 99999, multiplier: 100001, invalid_min: 1000010000, invalid_max: 9999999999 },
+    Config { pattern_min: 100000, pattern_max: 999999, multiplier: 1000001, invalid_min: 100000100000, invalid_max: 999999999999 },
+    Config { pattern_min: 1000000, pattern_max: 9999999, multiplier: 10000001, invalid_min: 10000001000000, invalid_max: 99999999999999 },
+    Config { pattern_min: 10000000, pattern_max: 99999999, multiplier: 100000001, invalid_min: 1000000010000000, invalid_max: 9999999999999999 },
+    Config { pattern_min: 100000000, pattern_max: 999999999, multiplier: 1000000001, invalid_min: 100000000100000000, invalid_max: 999999999999999999 },
 ];
 
 // Precomputed configs for Part 2: additional patterns with 3+ repetitions
 const PART2_ADDITIONAL: [Config; 6] = [
-    Config::new(3, 1),
-    Config::new(5, 1),
-    Config::new(6, 2),
-    Config::new(7, 1),
-    Config::new(9, 3),
-    Config::new(10, 2),
+    Config { pattern_min: 1, pattern_max: 9, multiplier: 111, invalid_min: 111, invalid_max: 999 },
+    Config { pattern_min: 1, pattern_max: 9, multiplier: 11111, invalid_min: 11111, invalid_max: 99999 },
+    Config { pattern_min: 10, pattern_max: 99, multiplier: 10101, invalid_min: 101010, invalid_max: 999999 },
+    Config { pattern_min: 1, pattern_max: 9, multiplier: 1111111, invalid_min: 1111111, invalid_max: 9999999 },
+    Config { pattern_min: 100, pattern_max: 999, multiplier: 1001001, invalid_min: 100100100, invalid_max: 999999999 },
+    Config { pattern_min: 10, pattern_max: 99, multiplier: 101010101, invalid_min: 1010101010, invalid_max: 9999999999 },
 ];
 
 // Precomputed configs for Part 2: overlaps to subtract
-const PART2_OVERLAPS: [Config; 2] = [Config::new(6, 1), Config::new(10, 1)];
+const PART2_OVERLAPS: [Config; 2] = [
+    Config { pattern_min: 1, pattern_max: 9, multiplier: 111111, invalid_min: 111111, invalid_max: 999999 },
+    Config { pattern_min: 1, pattern_max: 9, multiplier: 1111111111, invalid_min: 1111111111, invalid_max: 9999999999 },
+];
 
 impl Config {
-    const fn new(total_digits: u32, pattern_digits: u32) -> Self {
-        let pattern_min = pow10(pattern_digits - 1);
-        let pattern_max = pow10(pattern_digits) - 1;
-
-        // For patterns repeated n times: multiplier = (10^(pattern_digits * n) - 1) / (10^pattern_digits - 1)
-        // For n=2: multiplier = 10^pattern_digits + 1
-        // For n=3: multiplier = 10^(2*pattern_digits) + 10^pattern_digits + 1
-        let multiplier = if total_digits == pattern_digits * 2 {
-            pow10(pattern_digits) + 1
-        } else if total_digits == pattern_digits * 3 {
-            pow10(pattern_digits * 2) + pow10(pattern_digits) + 1
-        } else if total_digits == pattern_digits * 5 {
-            pow10(pattern_digits * 4) + pow10(pattern_digits * 3) + pow10(pattern_digits * 2) + pow10(pattern_digits) + 1
-        } else if total_digits == pattern_digits * 7 {
-            // For single digit patterns, we can compute this
-            pow10(6) + pow10(5) + pow10(4) + pow10(3) + pow10(2) + pow10(1) + 1
-        } else {
-            // Fallback to division formula (works when it doesn't overflow)
-            (pow10(total_digits) - 1) / (pow10(pattern_digits) - 1)
-        };
-
-        // Check for overflow when computing invalid_max
-        let (invalid_max, overflow) = pattern_max.overflowing_mul(multiplier);
-        let invalid_min = if overflow { 0 } else { pattern_min * multiplier };
-        let invalid_max = if overflow { 0 } else { invalid_max };
-
-        Config {
-            pattern_min,
-            pattern_max,
-            multiplier,
-            invalid_min,
-            invalid_max,
-        }
-    }
 
     /// Sum all invalid IDs in a range with this configuration.
     #[inline]
