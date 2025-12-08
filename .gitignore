@@ -1,0 +1,37 @@
+# Input files - DO NOT COMMIT (Advent of Code Terms of Service)
+# Input files are personal and should not be shared publicly
+**/input/**/*.txt
+input/
+
+# Build artifacts
+target/
+**/target/
+
+# Cargo.lock for libraries
+**/Cargo.lock
+Cargo.lock
+
+# Reference solutions (for learning only, not our code)
+reference/
+
+# IDE & Editor files
+.idea/
+.vscode/
+.claude/
+.ropeproject/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+sessioncookie.txt
+
+# Session cookie for input download
+.aoc_session
+
+# Profiling data
+perf.data*
+*.svg
+flamegraph.svg
