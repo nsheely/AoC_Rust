@@ -1,6 +1,6 @@
 // Day 23: A Long Walk
 //
-// The longest path problem is NP-hard, requiring several optimizations:
+// The longest path problem is NP-hard. Approach:
 //
 // 1. Compression: Convert maze into undirected weighted graph
 // 2. Grid Conversion: Transform graph into 6x6 grid representation
@@ -71,7 +71,7 @@ impl Grid {
     }
 }
 
-/// We only use 6 elements but 8 is faster to hash.
+/// We only use 6 elements but use 8 for alignment.
 type Row = [u8; 8];
 
 /// Undirected weighted graph representing the compressed maze.

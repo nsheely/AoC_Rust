@@ -88,7 +88,7 @@ pub fn part2(input: &str) -> usize {
     // Preparing a map for node encoding. The size is based on encoding 3 characters into a unique u32.
     // Each character is encoded into 5 bits, so 3 characters need 3*5 = 15 bits.
     let mut map = [0u32; 0b11001_11001_11001 + 1];
-    let mut starts = Vec::with_capacity(6); // Capacity is 6 as an optimization, there are 6 starting nodes, but a vector is used to make this a general solution
+    let mut starts = Vec::with_capacity(6); // There are 6 starting nodes (nodes ending in 'A')
 
     // Process each line in the node mappings to fill the map
     for line in mappings.lines() {
@@ -104,7 +104,7 @@ pub fn part2(input: &str) -> usize {
 
     // Encode the ending character 'Z'
     let z_end_encoded = (b'Z' - b'A') as u32;
-    let instructions_len = instructions.len(); // Cache the length of instructions for optimization
+    let instructions_len = instructions.len();
 
     // Process each starting node and calculate the steps to reach a node ending with 'Z'
     starts

@@ -2,7 +2,6 @@ const DIAL_SIZE: i32 = 100;
 const START_POSITION: i32 = 50;
 
 /// Parse a line of input into (is_left, distance).
-/// Uses byte-level parsing for speed - no string allocations or UTF-8 overhead.
 #[inline]
 fn parse_line(line: &[u8]) -> Option<(bool, i32)> {
     if line.is_empty() {
@@ -11,7 +10,7 @@ fn parse_line(line: &[u8]) -> Option<(bool, i32)> {
 
     let is_left = line[0] == b'L';
 
-    // Manual digit parsing: ~3x faster than str::parse()
+    // Parse number from bytes
     let mut num = 0i32;
     for &byte in &line[1..] {
         if byte >= b'0' && byte <= b'9' {
@@ -22,15 +21,11 @@ fn parse_line(line: &[u8]) -> Option<(bool, i32)> {
     Some((is_left, num))
 }
 
-/// Single-pass solution computing both parts simultaneously.
+/// Count crossings through position 0 for Part 2.
 ///
-/// Key insight for Part 2: Count how many times we pass through position 0.
-/// - Right turn from P moving D steps: crosses 0 exactly (P+D)/100 times
-/// - Left turn from P moving D steps: We "reverse" the dial perspective
-///
-/// The reversal trick: Going left from position P is equivalent to going right
-/// from position (100-P) on a mirrored dial. This unifies the logic:
-/// both directions use the same formula (position + distance) / DIAL_SIZE.
+/// Right turns from position P moving D steps cross 0 exactly (P+D)/100 times.
+/// Left turns use a reversal: going left from P is like going right from (100-P).
+/// This allows both directions to use the same crossing formula.
 #[aoc_generator(day1)]
 pub fn parse(input: &str) -> (i32, i32) {
     let mut position = START_POSITION;

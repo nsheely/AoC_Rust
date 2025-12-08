@@ -13,7 +13,7 @@ mod part1_impl {
     pub fn count_arrangements(spring_layout: &str, group_sizes: impl Iterator<Item = usize>) -> u64 {
         // Collect group sizes into a vector for easy access
         let group_sizes = group_sizes.collect::<Vec<_>>();
-        // Prepend a '.' to handle edge cases and trim trailing operational springs for optimization
+        // Prepend a '.' to handle edge cases and trim trailing operational springs
         let spring_layout = format!(".{}", spring_layout.trim_end_matches('.'));
         // Convert the string into a character vector for easier iteration
         let spring_layout = spring_layout.chars().collect::<Vec<_>>();
@@ -86,7 +86,7 @@ mod part2_impl {
     pub fn count_arrangements(spring_layout: &str, group_sizes: impl Iterator<Item = usize>) -> u128 {
         // Collect group sizes into a vector for easy access
         let group_sizes = group_sizes.collect::<Vec<_>>();
-        // Prepend a '.' to handle edge cases and trim trailing operational springs for optimization
+        // Prepend a '.' to handle edge cases and trim trailing operational springs
         let spring_layout = format!(".{}", spring_layout.trim_end_matches('.'));
         // Convert the string into a character vector for easier iteration
         let spring_layout = spring_layout.chars().collect::<Vec<_>>();
@@ -148,7 +148,7 @@ pub fn part2(input: &str) -> u128 {
             // Calculate the required capacity to avoid reallocations
             let mut extended_spring_layout = String::with_capacity(spring_layout.len() * 5 + 4);
 
-            // Build the string efficiently in one pass
+            // Build the expanded string
             for i in 0..5 {
                 if i > 0 {
                     extended_spring_layout.push('?');

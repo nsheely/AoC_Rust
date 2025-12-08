@@ -13,7 +13,7 @@ mod part1_impl {
     // Define the structure `Almanac` to hold the mappings.
     pub struct Almanac {
         // An array of BTreeMaps, each representing a different category of mapping.
-        // BTreeMap is chosen for efficient range queries.
+        // BTreeMap allows range queries to find overlapping mappings.
         mappings: [BTreeMap<u64, (u64, u64)>; 7],
     }
 
@@ -106,7 +106,7 @@ mod part2_impl {
     // Define the structure `Almanac` to hold the mappings.
     pub struct Almanac {
         // An array of BTreeMaps, each representing a different category of mapping.
-        // BTreeMap is chosen for efficient range queries.
+        // BTreeMap allows range queries to find overlapping mappings.
         mappings: [BTreeMap<u64, (u64, u64)>; 7],
     }
 
