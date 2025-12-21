@@ -42,14 +42,14 @@ fn solve<const N: usize>(input: &str) -> u64 {
                         break; // Candidate too small, done
                     }
                     // Swap candidate in, continue with displaced value
-                    let temp = *slot;
-                    *slot = candidate;
-                    candidate = temp;
+                    std::mem::swap(&mut *slot, &mut candidate);
                 }
             }
 
             // Convert digit bytes to decimal number
-            batteries.iter().fold(0u64, |acc, &b| acc * 10 + (b - b'0') as u64)
+            batteries
+                .iter()
+                .fold(0u64, |acc, &b| acc * 10 + (b - b'0') as u64)
         })
         .sum()
 }

@@ -23,7 +23,7 @@ fn parse_line(line: &[u8]) -> Option<(bool, i32)> {
     // Parse number from bytes
     let mut num = 0i32;
     for &byte in &line[1..] {
-        if byte >= b'0' && byte <= b'9' {
+        if byte.is_ascii_digit() {
             num = num * 10 + (byte - b'0') as i32;
         }
     }

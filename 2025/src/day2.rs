@@ -12,24 +12,22 @@
 /// - 3-digit pattern repeated twice: ABC * 1001 (e.g., 123 * 1001 = 123123)
 /// - General: pattern * ((10^total_digits - 1) / (10^pattern_digits - 1))
 
-
 #[aoc_generator(day2)]
 pub fn parse(input: &str) -> Vec<(u64, u64)> {
     input
         .lines()
         .filter(|line| !line.trim().is_empty())
         .flat_map(|line| {
-            line.split(',')
-                .filter_map(|range| {
-                    let parts: Vec<&str> = range.trim().split('-').collect();
-                    if parts.len() == 2 {
-                        let start: u64 = parts[0].parse().ok()?;
-                        let end: u64 = parts[1].parse().ok()?;
-                        Some((start, end))
-                    } else {
-                        None
-                    }
-                })
+            line.split(',').filter_map(|range| {
+                let parts: Vec<&str> = range.trim().split('-').collect();
+                if parts.len() == 2 {
+                    let start: u64 = parts[0].parse().ok()?;
+                    let end: u64 = parts[1].parse().ok()?;
+                    Some((start, end))
+                } else {
+                    None
+                }
+            })
         })
         .collect()
 }
@@ -46,35 +44,136 @@ struct Config {
 
 // Precomputed configs for Part 1: patterns repeated exactly 2 times
 const PART1_CONFIGS: [Config; 9] = [
-    Config { pattern_min: 1, pattern_max: 9, multiplier: 11, invalid_min: 11, invalid_max: 99 },
-    Config { pattern_min: 10, pattern_max: 99, multiplier: 101, invalid_min: 1010, invalid_max: 9999 },
-    Config { pattern_min: 100, pattern_max: 999, multiplier: 1001, invalid_min: 100100, invalid_max: 999999 },
-    Config { pattern_min: 1000, pattern_max: 9999, multiplier: 10001, invalid_min: 10001000, invalid_max: 99999999 },
-    Config { pattern_min: 10000, pattern_max: 99999, multiplier: 100001, invalid_min: 1000010000, invalid_max: 9999999999 },
-    Config { pattern_min: 100000, pattern_max: 999999, multiplier: 1000001, invalid_min: 100000100000, invalid_max: 999999999999 },
-    Config { pattern_min: 1000000, pattern_max: 9999999, multiplier: 10000001, invalid_min: 10000001000000, invalid_max: 99999999999999 },
-    Config { pattern_min: 10000000, pattern_max: 99999999, multiplier: 100000001, invalid_min: 1000000010000000, invalid_max: 9999999999999999 },
-    Config { pattern_min: 100000000, pattern_max: 999999999, multiplier: 1000000001, invalid_min: 100000000100000000, invalid_max: 999999999999999999 },
+    Config {
+        pattern_min: 1,
+        pattern_max: 9,
+        multiplier: 11,
+        invalid_min: 11,
+        invalid_max: 99,
+    },
+    Config {
+        pattern_min: 10,
+        pattern_max: 99,
+        multiplier: 101,
+        invalid_min: 1010,
+        invalid_max: 9999,
+    },
+    Config {
+        pattern_min: 100,
+        pattern_max: 999,
+        multiplier: 1001,
+        invalid_min: 100100,
+        invalid_max: 999999,
+    },
+    Config {
+        pattern_min: 1000,
+        pattern_max: 9999,
+        multiplier: 10001,
+        invalid_min: 10001000,
+        invalid_max: 99999999,
+    },
+    Config {
+        pattern_min: 10000,
+        pattern_max: 99999,
+        multiplier: 100001,
+        invalid_min: 1000010000,
+        invalid_max: 9999999999,
+    },
+    Config {
+        pattern_min: 100000,
+        pattern_max: 999999,
+        multiplier: 1000001,
+        invalid_min: 100000100000,
+        invalid_max: 999999999999,
+    },
+    Config {
+        pattern_min: 1000000,
+        pattern_max: 9999999,
+        multiplier: 10000001,
+        invalid_min: 10000001000000,
+        invalid_max: 99999999999999,
+    },
+    Config {
+        pattern_min: 10000000,
+        pattern_max: 99999999,
+        multiplier: 100000001,
+        invalid_min: 1000000010000000,
+        invalid_max: 9999999999999999,
+    },
+    Config {
+        pattern_min: 100000000,
+        pattern_max: 999999999,
+        multiplier: 1000000001,
+        invalid_min: 100000000100000000,
+        invalid_max: 999999999999999999,
+    },
 ];
 
 // Precomputed configs for Part 2: additional patterns with 3+ repetitions
 const PART2_ADDITIONAL: [Config; 6] = [
-    Config { pattern_min: 1, pattern_max: 9, multiplier: 111, invalid_min: 111, invalid_max: 999 },
-    Config { pattern_min: 1, pattern_max: 9, multiplier: 11111, invalid_min: 11111, invalid_max: 99999 },
-    Config { pattern_min: 10, pattern_max: 99, multiplier: 10101, invalid_min: 101010, invalid_max: 999999 },
-    Config { pattern_min: 1, pattern_max: 9, multiplier: 1111111, invalid_min: 1111111, invalid_max: 9999999 },
-    Config { pattern_min: 100, pattern_max: 999, multiplier: 1001001, invalid_min: 100100100, invalid_max: 999999999 },
-    Config { pattern_min: 10, pattern_max: 99, multiplier: 101010101, invalid_min: 1010101010, invalid_max: 9999999999 },
+    Config {
+        pattern_min: 1,
+        pattern_max: 9,
+        multiplier: 111,
+        invalid_min: 111,
+        invalid_max: 999,
+    },
+    Config {
+        pattern_min: 1,
+        pattern_max: 9,
+        multiplier: 11111,
+        invalid_min: 11111,
+        invalid_max: 99999,
+    },
+    Config {
+        pattern_min: 10,
+        pattern_max: 99,
+        multiplier: 10101,
+        invalid_min: 101010,
+        invalid_max: 999999,
+    },
+    Config {
+        pattern_min: 1,
+        pattern_max: 9,
+        multiplier: 1111111,
+        invalid_min: 1111111,
+        invalid_max: 9999999,
+    },
+    Config {
+        pattern_min: 100,
+        pattern_max: 999,
+        multiplier: 1001001,
+        invalid_min: 100100100,
+        invalid_max: 999999999,
+    },
+    Config {
+        pattern_min: 10,
+        pattern_max: 99,
+        multiplier: 101010101,
+        invalid_min: 1010101010,
+        invalid_max: 9999999999,
+    },
 ];
 
 // Precomputed configs for Part 2: overlaps to subtract
 const PART2_OVERLAPS: [Config; 2] = [
-    Config { pattern_min: 1, pattern_max: 9, multiplier: 111111, invalid_min: 111111, invalid_max: 999999 },
-    Config { pattern_min: 1, pattern_max: 9, multiplier: 1111111111, invalid_min: 1111111111, invalid_max: 9999999999 },
+    Config {
+        pattern_min: 1,
+        pattern_max: 9,
+        multiplier: 111111,
+        invalid_min: 111111,
+        invalid_max: 999999,
+    },
+    Config {
+        pattern_min: 1,
+        pattern_max: 9,
+        multiplier: 1111111111,
+        invalid_min: 1111111111,
+        invalid_max: 9999999999,
+    },
 ];
 
 impl Config {
-
     /// Sum all invalid IDs in a range with this configuration.
     #[inline]
     fn sum_in_range(&self, start: u64, end: u64) -> u64 {
@@ -87,7 +186,7 @@ impl Config {
         }
 
         // Convert back to base patterns to count how many exist in range
-        let first_pattern = (lower + self.multiplier - 1) / self.multiplier; // Round up
+        let first_pattern = lower.div_ceil(self.multiplier);
         let last_pattern = upper / self.multiplier; // Round down
 
         if first_pattern > last_pattern
