@@ -17,7 +17,11 @@ pub fn parse(input: &str) -> Output {
         .lines()
         .map(|line| {
             let mut nums = line.split(',').map(|s| s.trim().parse::<i32>().unwrap());
-            (nums.next().unwrap(), nums.next().unwrap(), nums.next().unwrap())
+            (
+                nums.next().unwrap(),
+                nums.next().unwrap(),
+                nums.next().unwrap(),
+            )
         })
         .collect()
 }
@@ -192,13 +196,7 @@ impl KdNode {
         }))
     }
 
-    fn k_nearest(
-        &self,
-        target: &Point,
-        target_idx: usize,
-        depth: usize,
-        best: &mut KNearest,
-    ) {
+    fn k_nearest(&self, target: &Point, target_idx: usize, depth: usize, best: &mut KNearest) {
         if self.idx != target_idx {
             let dist = dist2(target, &self.point);
             if dist < best.max_dist() {

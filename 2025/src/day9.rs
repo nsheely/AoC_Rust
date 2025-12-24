@@ -18,13 +18,15 @@ fn convex_hull(points: &[Point]) -> Vec<Point> {
     let mut pts = points.to_vec();
     pts.sort_unstable();
     pts.dedup();
-    if pts.len() <= 3 { return pts; }
+    if pts.len() <= 3 {
+        return pts;
+    }
 
     fn build_half<'a, I: Iterator<Item = &'a Point>>(iter: I, cap: usize) -> Vec<Point> {
         let mut hull = Vec::with_capacity(cap);
         for &p in iter {
             // <= 0 drops collinear points for a strict hull
-            while hull.len() >= 2 && cross(hull[hull.len()-2], hull[hull.len()-1], p) <= 0 {
+            while hull.len() >= 2 && cross(hull[hull.len() - 2], hull[hull.len() - 1], p) <= 0 {
                 hull.pop();
             }
             hull.push(p);
@@ -43,10 +45,13 @@ fn convex_hull(points: &[Point]) -> Vec<Point> {
 
 #[aoc_generator(day9)]
 pub fn parse(input: &str) -> Vec<Point> {
-    input.lines()
+    input
+        .lines()
         .filter_map(|l| {
             let l = l.trim();
-            if l.is_empty() { return None; }
+            if l.is_empty() {
+                return None;
+            }
             let (a, b) = l.split_once(',')?;
             Some((a.trim().parse().ok()?, b.trim().parse().ok()?))
         })
@@ -66,12 +71,19 @@ pub fn part1(tiles: &[Point]) -> i64 {
 }
 
 #[derive(Clone, Copy)]
-struct Interval { l: i32, r: i32 }
+struct Interval {
+    l: i32,
+    r: i32,
+}
 
 impl Interval {
-    #[inline] fn contains(self, x: i32) -> bool { self.l <= x && x <= self.r }
+    #[inline]
+    fn contains(self, x: i32) -> bool {
+        self.l <= x && x <= self.r
+    }
 
-    #[inline] fn intersect(self, other: Interval) -> Option<Interval> {
+    #[inline]
+    fn intersect(self, other: Interval) -> Option<Interval> {
         let l = self.l.max(other.l);
         let r = self.r.min(other.r);
         (l <= r).then_some(Interval { l, r })
@@ -87,8 +99,12 @@ fn find_interval(intervals: &[Interval], x: i32) -> Option<usize> {
 #[inline]
 fn toggle_sorted(xs: &mut Vec<i32>, x: i32) {
     match xs.binary_search(&x) {
-        Ok(i) => { xs.remove(i); }
-        Err(i) => { xs.insert(i, x); }
+        Ok(i) => {
+            xs.remove(i);
+        }
+        Err(i) => {
+            xs.insert(i, x);
+        }
     }
 }
 
@@ -96,12 +112,19 @@ fn toggle_sorted(xs: &mut Vec<i32>, x: i32) {
 fn rebuild_intervals(edges: &[i32], out: &mut Vec<Interval>) {
     out.clear();
     for pair in edges.chunks_exact(2) {
-        out.push(Interval { l: pair[0], r: pair[1] });
+        out.push(Interval {
+            l: pair[0],
+            r: pair[1],
+        });
     }
 }
 
 #[derive(Clone, Copy)]
-struct Candidate { x: i32, y: i32, interval: Interval }
+struct Candidate {
+    x: i32,
+    y: i32,
+    interval: Interval,
+}
 
 #[aoc(day9, part2)]
 pub fn part2(input: &[Point]) -> i64 {
@@ -190,7 +213,11 @@ pub fn part2(input: &[Point]) -> i64 {
         // 5) Create new candidates from boundary x positions on this row
         for &x in &row_xs {
             if let Some(k) = find_interval(&intervals, x) {
-                candidates.push(Candidate { x, y, interval: intervals[k] });
+                candidates.push(Candidate {
+                    x,
+                    y,
+                    interval: intervals[k],
+                });
             }
         }
     }
