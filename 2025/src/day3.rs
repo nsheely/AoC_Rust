@@ -1,9 +1,9 @@
 // Day 3: Lobby
 //
 // Find maximum joltage from battery banks.
-// Each bank is a line of digits. Turn on exactly 2 batteries.
-// Joltage = 2-digit number formed by the selected batteries (in order).
-// Part 1: Sum of maximum joltage from each bank.
+// Each bank is a line of digits. Turn on N batteries to form an N-digit number.
+// Part 1: Sum of maximum joltage (2 batteries, 2-digit number)
+// Part 2: Sum of maximum joltage (12 batteries, 12-digit number)
 
 #[aoc(day3, part1)]
 pub fn part1(input: &str) -> u64 {

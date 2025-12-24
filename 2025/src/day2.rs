@@ -1,16 +1,16 @@
-/// Day 2: Gift Shop
-///
-/// Find and sum all "invalid" product IDs within given ranges.
-/// An invalid ID is any number formed by repeating a digit sequence.
-/// Examples: 11 (1 repeated twice), 6464 (64 repeated twice), 123123 (123 repeated twice)
-///
-/// Rather than iterating through every number in the range checking if it's invalid,
-/// we compute which patterns exist in the range, then sum them with an arithmetic series.
-///
-/// Pattern multipliers:
-/// - 2-digit pattern repeated twice: XY * 101 (e.g., 12 * 101 = 1212)
-/// - 3-digit pattern repeated twice: ABC * 1001 (e.g., 123 * 1001 = 123123)
-/// - General: pattern * ((10^total_digits - 1) / (10^pattern_digits - 1))
+// Day 2: Gift Shop
+//
+// Find and sum all "invalid" product IDs within given ranges.
+// An invalid ID is any number formed by repeating a digit sequence.
+// Examples: 11 (1 repeated twice), 6464 (64 repeated twice), 123123 (123 repeated twice)
+//
+// Rather than iterating through every number in the range checking if it's invalid,
+// we compute which patterns exist in the range, then sum them with an arithmetic series.
+//
+// Pattern multipliers:
+// - 2-digit pattern repeated twice: XY * 101 (e.g., 12 * 101 = 1212)
+// - 3-digit pattern repeated twice: ABC * 1001 (e.g., 123 * 1001 = 123123)
+// - General: pattern * ((10^total_digits - 1) / (10^pattern_digits - 1))
 
 #[aoc_generator(day2)]
 pub fn parse(input: &str) -> Vec<(u64, u64)> {

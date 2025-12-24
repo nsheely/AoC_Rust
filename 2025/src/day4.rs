@@ -1,7 +1,8 @@
 // Day 4: Printing Department
 //
 // Count paper rolls (@) that can be accessed by forklifts.
-// A roll is accessible if it has fewer than 4 paper rolls in its 8 neighbors.
+// Part 1: Count rolls with fewer than 4 neighboring rolls
+// Part 2: Count rolls removed by cascade (removing a roll reduces neighbor counts)
 
 #[inline(always)]
 const fn neighbor_offsets(stride: usize) -> [isize; 8] {
